@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "cidade")
 public class Cidade implements Serializable {
 
     private static final long serialVersionUID = 1L;

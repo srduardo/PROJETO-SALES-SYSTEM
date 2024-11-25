@@ -38,70 +38,96 @@
 <div class="container">
     <form action="/salvarEntrada" th:object="${entrada}" method="POST">
         <div class="form-group">
-            <label>ID:</label>
-            <input type="text" required readonly="true" class="form-control" id="id" th:field="*{id}">
-            <label>Observação:</label>
-            <input type="text" required class="form-control" id="nome" th:field="*{obs}">
-            <label>Funcionário:</label>
-            <select th:field="*{funcionario}" class="form-control">
-                <option th:each="fun : ${listaFuncionarios}" th:value="${fun.id}" th:text="${fun.nome}"></option>
-            </select>
-            <label>Fornecedores:</label>
-            <select th:field="*{fornecedor}" class="form-control">
-                <option th:each="for : ${listaFornecedores}" th:value="${for.id}" th:text="${for.nome}"></option>
-            </select>
-            <label>Valor Total:</label>
-            <input type="text" readonly class="form-control" id="valorTotal" th:field="*{valorTotal}">
-            <label>Quantidade Total:</label>
-            <input type="text" readonly class="form-control" id="quantidadeTotal" th:field="*{quantidadeTotal}">
 
-            <div class="form-row" th:object="${itemEntrada}">
-                <label>Produtos:</label>
-                <select th:field="*{produto}" class="form-control">
-                    <option th:each="prod : ${listaProdutos}" th:value="${prod.id}" th:text="${prod.nome}"></option>
-                </select>
-                <label>Quantidade:</label>
-                <input type="text" readonly class="form-control" id="quantidade" th:field="*{quantidade}">
-                <label>Valor de Custo:</label>
-                <input type="text" readonly class="form-control" id="valorCusto" th:field="*{valorCusto}">
-                <label>Valor de Venda:</label>
-                <input type="text" readonly class="form-control" id="valor" th:field="*{valor}">
-
-                <button name="acao", th:value="itens" type="submit" class="btn btn-dark">Adicionar</button>
-
+            <div class="row" style="margin-top: 15px" th:object="${itemEntrada}">
+                <div class="col-5">
+                    <label>Produtos:</label>
+                    <select th:field="*{produto}" class="form-control">
+                        <option th:each="prod : ${listaProdutos}" th:value="${prod.id}" th:text="${prod.nome}"></option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Quantidade:</label>
+                    <input type="text" class="form-control" id="quantidade" th:field="*{quantidade}">
+                </div>
+                <div class="col">
+                    <label>Valor de Custo:</label>
+                    <input type="text" class="form-control" id="valorCusto" th:field="*{valorCusto}">
+                </div>
+                <div class="col">
+                    <label>Valor de Venda:</label>
+                    <input type="text" style="margin-bottom: 10px" class="form-control" id="valor" th:field="*{valor}">
+                </div>
+                <div class="col-1.5">
+                    <button name="acao" th:value="itens" style="margin-top: 32px" type="submit" class="btn btn-dark"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Adicionar</button>
+                </div>
             </div>
 
-            <table class="table" id="tabela">
-                <thead>
-                <tr>
-                    <td>ID</td>
-                    <td>Produto</td>
-                    <td>Quantidade</td>
-                    <td>Valor de Custo</td>
-                    <td>Valor de Venda</td>
-                    <td>Ação</td>
-                </tr>
-                </thead>
+            <div class="row">
+                <div class="col-4">
+                    <label>ID:</label>
+                    <input type="text" readonly class="form-control" id="id" th:field="*{id}">
 
-                <tbody>
-                <tr th:each="itemEntrada: ${listaItemEntrada}">
-                    <td th:text="${itemEntrada.id}"></td>
-                    <td th:text="${itemEntrada.produto.nome}"></td>
-                    <td th:text="${itemEntrada.quantidade}"></td>
-                    <td th:text="${itemEntrada.valorCusto}"></td>
-                    <td th:text="${itemEntrada.valor}"></td>
-                    <td colspan="2">
-                        <a th:href="@{/editarItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-pen-to-square" style="color: #63E6BE;"></i></a>
-                        <a th:href="@{/removerItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    <label>Observação:</label>
+                    <input type="text" class="form-control" id="obs" th:field="*{obs}">
+
+                    <label>Funcionário:</label>
+                    <select th:field="*{funcionario}" class="form-control">
+                        <option th:each="fun : ${listaFuncionarios}" th:value="${fun.id}" th:text="${fun.nome}"></option>
+                    </select>
+
+                    <label>Fornecedores:</label>
+                    <select th:field="*{fornecedor}" class="form-control">
+                        <option th:each="for : ${listaFornecedores}" th:value="${for.id}" th:text="${for.nome}"></option>
+                    </select>
+
+                    <label>Quantidade Total:</label>
+                    <input type="text" readonly class="form-control" id="quantidadeTotal" th:field="*{quantidadeTotal}">
+
+                    <label>Valor Total:</label>
+                    <input type="text" readonly style="margin-bottom: 15px" class="form-control" id="valorTotal" th:field="*{valorTotal}">
+
+                    <a href="/administrativo" type="submit" class="btn btn-danger"><i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i> Voltar</a>
+                    <a href="/listarEntrada" type="submit" class="btn btn-success"><i class="fa-solid fa-list-ul" style="color: #ffffff;"></i> Listar</a>
+                    <a href=""><button name="acao" th:value="salvar" type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk" style="color: #ffffff;"></i> Salvar</button></a>
+                </div>
+                <div class="col">
+                    <table class="table table-striped" id="tabela" style="margin-top: 30px">
+                        <thead class="bg-dark" style="color: white">
+                        <tr>
+                            <td>ID</td>
+                            <td>Produto</td>
+                            <td>Quantidade</td>
+                            <td>Valor de Custo</td>
+                            <td>Valor de Venda</td>
+                            <td>Ação</td>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="itemEntrada: ${listaItemEntrada}">
+                            <td th:text="${itemEntrada.id}"></td>
+                            <td th:text="${itemEntrada.produto.nome}"></td>
+                            <td th:text="${itemEntrada.quantidade}"></td>
+                            <td th:text="${itemEntrada.valorCusto}"></td>
+                            <td th:text="${itemEntrada.valor}"></td>
+                            <td colspan="2">
+                                <a th:href="@{/editarItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-pen-to-square" style="color: #63E6BE;"></i></a>
+                                <a th:href="@{/removerItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+
+
         </div>
 
-        <a href="/administrativo" type="submit" class="btn btn-danger"><i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i> Voltar</a>
-        <a href="/listarEntrada" type="submit" class="btn btn-success"><i class="fa-solid fa-list-ul" style="color: #ffffff;"></i> Listar</a>
-        <a href=""><button type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk" style="color: #ffffff;"></i> Salvar</button></a>
+
     </form>
 </div>
 

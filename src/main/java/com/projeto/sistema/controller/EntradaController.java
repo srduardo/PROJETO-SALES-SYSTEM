@@ -2,6 +2,7 @@ package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
+import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,7 @@ public class EntradaController {
         ModelAndView mv = new ModelAndView("administrativo/entradas/cadastro");
         mv.addObject("entrada", entrada);
         mv.addObject("itemEntrada", itemEntrada);
-        mv.addObject("listaItemEntradas", this.listaItemEntrada);
+        mv.addObject("listaItemEntrada", this.listaItemEntrada);
         mv.addObject("listaFuncionarios", funcionarioRepository.findAll());
         mv.addObject("listaFornecedores", fornecedorRepository.findAll());
         mv.addObject("listaProdutos", produtoRepository.findAll());
@@ -63,13 +64,34 @@ public class EntradaController {
 //    }
 
     @PostMapping("/salvarEntrada")
-    public ModelAndView salvar(Entrada entrada, ItemEntrada itemEntrada, BindingResult result) {
+    public ModelAndView salvar(String acao, Entrada entrada, ItemEntrada itemEntrada, BindingResult result) {
         if (result.hasErrors()) {
             return cadastrar(entrada, itemEntrada);
         }
 
-        entradaRepository.saveAndFlush(entrada);
-        return cadastrar(new Entrada(), new ItemEntrada());
+        if (acao.equals("itens")) {
+            this.listaItemEntrada.add(itemEntrada);
+            entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
+            entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
+        } else if (acao.equals("salvar")) {
+            entradaRepository.saveAndFlush(entrada);
+
+            for (ItemEntrada it : listaItemEntrada) {
+                it.setEntrada(entrada);
+                itemEntradaRepository.saveAndFlush(it);
+
+                Optional<Produto> prod = produtoRepository.findById(it. getProduto().getId());
+                Produto produto = prod.get();
+                produto.setEstoque(produto.getEstoque() + it.getQuantidade());
+                produto.setPrecoVenda(it.getValor());
+                produto.setPrecoCusto(it.getValorCusto());
+                produtoRepository.saveAndFlush(produto);
+
+                this.listaItemEntrada = new ArrayList<>();
+            }
+            return cadastrar(new Entrada(), new ItemEntrada());
+        }
+        return cadastrar(entrada, new ItemEntrada());
     }
 
     public List<ItemEntrada> getListaItemEntrada() {
