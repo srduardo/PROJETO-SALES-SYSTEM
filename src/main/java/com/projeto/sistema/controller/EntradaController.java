@@ -50,18 +50,29 @@ public class EntradaController {
         return mv;
     }
 
-//    @GetMapping("/editarEntrada/{id}")
-//    public ModelAndView editar(@PathVariable("id") Long id) {
-//        Optional<Entrada> entrada = entradaRepository.findById(id);
-//        return cadastrar(entrada.get());
-//    }
+    @GetMapping("/editarEntrada/{id}")
+    public ModelAndView editar(@PathVariable("id") Long id) {
+        Optional<Entrada> entrada = entradaRepository.findById(id);
+        this.listaItemEntrada = itemEntradaRepository.buscarPorEntrada(id);
+        return cadastrar(entrada.get(), new ItemEntrada());
+    }
 
-//    @GetMapping("/removerEntrada/{id}")
-//    public ModelAndView remover(@PathVariable("id") Long id) {
-//        Optional<Entrada> entrada = entradaRepository.findById(id);
-//        entradaRepository.delete(entrada.get());
-//        return listar();
-//    }
+    @GetMapping("/removerEntrada/{id}")
+    public ModelAndView remover(@PathVariable("id") Long id) {
+        Optional<Entrada> entrada = entradaRepository.findById(id);
+
+        this.listaItemEntrada = itemEntradaRepository.findAll();
+
+        for (ItemEntrada it: this.listaItemEntrada) {
+            if (it.getEntrada().getId().equals(id)) {
+                it.getProduto().setEstoque(it.getProduto().getEstoque() - it.getQuantidade());
+                itemEntradaRepository.deleteById(it.getId());
+            }
+        }
+
+        entradaRepository.delete(entrada.get());
+        return listar();
+    }
 
     @PostMapping("/salvarEntrada")
     public ModelAndView salvar(String acao, Entrada entrada, ItemEntrada itemEntrada, BindingResult result) {
