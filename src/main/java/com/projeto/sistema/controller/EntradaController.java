@@ -74,6 +74,23 @@ public class EntradaController {
         return listar();
     }
 
+    @GetMapping("/removerItemEntrada/{item}")
+    public ModelAndView removerItemEntrada(@PathVariable("item") Long item) {
+
+        for (ItemEntrada it: listaItemEntrada) {
+            if (it.equals(item)) {
+                Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
+                Produto produto = prod.get();
+                produto.setEstoque(produto.getEstoque() - it.getQuantidade());
+                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - it.getValor() * it.getQuantidade());
+                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
+            }
+        }
+
+        listaItemEntrada.remove(item);
+        return cadastrar(new Entrada(), new ItemEntrada());
+    }
+
     @PostMapping("/salvarEntrada")
     public ModelAndView salvar(String acao, Entrada entrada, ItemEntrada itemEntrada, BindingResult result) {
         if (result.hasErrors()) {
@@ -81,9 +98,10 @@ public class EntradaController {
         }
 
         if (acao.equals("itens")) {
-            this.listaItemEntrada.add(itemEntrada);
             entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
             entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
+            itemEntradaRepository.saveAndFlush(itemEntrada);
+            this.listaItemEntrada.add(itemEntrada);
         } else if (acao.equals("salvar")) {
             entradaRepository.saveAndFlush(entrada);
 
@@ -91,7 +109,7 @@ public class EntradaController {
                 it.setEntrada(entrada);
                 itemEntradaRepository.saveAndFlush(it);
 
-                Optional<Produto> prod = produtoRepository.findById(it. getProduto().getId());
+                Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
                 Produto produto = prod.get();
                 produto.setEstoque(produto.getEstoque() + it.getQuantidade());
                 produto.setPrecoVenda(it.getValor());

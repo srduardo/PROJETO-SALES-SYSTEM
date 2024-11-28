@@ -113,7 +113,7 @@
                             <td th:text="${itemEntrada.valor}"></td>
                             <td colspan="2">
                                 <a th:href="@{/editarItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-pen-to-square" style="color: #63E6BE;"></i></a>
-                                <a th:href="@{/removerItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
+                                <a th:href="@{/removerItemEntrada/{item}(id=${itemEntrada})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
                             </td>
                         </tr>
                         </tbody>
