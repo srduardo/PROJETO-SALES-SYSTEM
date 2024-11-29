@@ -63,11 +63,17 @@ public class EntradaController {
 
         this.listaItemEntrada = itemEntradaRepository.findAll();
 
-        for (ItemEntrada it: this.listaItemEntrada) {
+        for (ItemEntrada it : this.listaItemEntrada) {
             if (it.getEntrada().getId().equals(id)) {
                 it.getProduto().setEstoque(it.getProduto().getEstoque() - it.getQuantidade());
                 itemEntradaRepository.deleteById(it.getId());
             }
+        }
+
+        int tamanhoListaItemEntrada = this.listaItemEntrada.size();
+
+        for (int i = 0; i < tamanhoListaItemEntrada - 1; i++) {
+            ItemEntrada listaItemEntradaDeletados = this.listaItemEntrada.remove(i);
         }
 
         entradaRepository.delete(entrada.get());
@@ -78,19 +84,28 @@ public class EntradaController {
     public ModelAndView removerItemEntrada(@PathVariable("idSequencia") Long idSequencia) {
         ItemEntrada itemEntrada = null;
 
-        for (ItemEntrada it: listaItemEntrada) {
+        for (ItemEntrada it : this.listaItemEntrada) {
             if (it.getIdSequencia().equals(idSequencia)) {
                 itemEntrada = it;
                 Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
-                Produto produto = prod.get();
-                produto.setEstoque(produto.getEstoque() - it.getQuantidade());
-//                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - it.getValor() * it.getQuantidade());
-//                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
+
+                if (prod.isPresent()) {
+                    Produto produto = prod.get();
+                    produto.setEstoque(produto.getEstoque() - it.getQuantidade());
+                }
+
+                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - (it.getValor() * it.getQuantidade()));
+                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
             }
         }
 
         Entrada entrada = itemEntrada.getEntrada();
         listaItemEntrada.remove(itemEntrada);
+
+        if (entrada.getId() != null && entradaRepository.findById(entrada.getId()).isEmpty()) {
+            return cadastrar(new Entrada(), new ItemEntrada());
+        }
+
         return cadastrar(entrada, new ItemEntrada());
     }
 
@@ -108,6 +123,7 @@ public class EntradaController {
             } else {
                 itemEntrada.setIdSequencia(this.listaItemEntrada.get(this.listaItemEntrada.size() - 1).getIdSequencia() + 1L);
             }
+            itemEntrada.setEntrada(entrada);
             this.listaItemEntrada.add(itemEntrada);
         } else if (acao.equals("salvar")) {
             entradaRepository.saveAndFlush(entrada);
