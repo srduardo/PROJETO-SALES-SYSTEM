@@ -74,21 +74,24 @@ public class EntradaController {
         return listar();
     }
 
-    @GetMapping("/removerItemEntrada/{item}")
-    public ModelAndView removerItemEntrada(@PathVariable("item") Long item) {
+    @GetMapping("/removerItemEntrada/{idSequencia}")
+    public ModelAndView removerItemEntrada(@PathVariable("idSequencia") Long idSequencia) {
+        ItemEntrada itemEntrada = null;
 
         for (ItemEntrada it: listaItemEntrada) {
-            if (it.equals(item)) {
+            if (it.getIdSequencia().equals(idSequencia)) {
+                itemEntrada = it;
                 Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
                 Produto produto = prod.get();
                 produto.setEstoque(produto.getEstoque() - it.getQuantidade());
-                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - it.getValor() * it.getQuantidade());
-                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
+//                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - it.getValor() * it.getQuantidade());
+//                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
             }
         }
 
-        listaItemEntrada.remove(item);
-        return cadastrar(new Entrada(), new ItemEntrada());
+        Entrada entrada = itemEntrada.getEntrada();
+        listaItemEntrada.remove(itemEntrada);
+        return cadastrar(entrada, new ItemEntrada());
     }
 
     @PostMapping("/salvarEntrada")
@@ -100,7 +103,11 @@ public class EntradaController {
         if (acao.equals("itens")) {
             entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
             entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
-            itemEntradaRepository.saveAndFlush(itemEntrada);
+            if (this.listaItemEntrada.isEmpty()) {
+                itemEntrada.setIdSequencia(1L);
+            } else {
+                itemEntrada.setIdSequencia(this.listaItemEntrada.get(this.listaItemEntrada.size() - 1).getIdSequencia() + 1L);
+            }
             this.listaItemEntrada.add(itemEntrada);
         } else if (acao.equals("salvar")) {
             entradaRepository.saveAndFlush(entrada);
