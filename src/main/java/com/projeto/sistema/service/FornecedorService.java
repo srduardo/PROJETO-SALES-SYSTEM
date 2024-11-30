@@ -1,43 +1,43 @@
 package com.projeto.sistema.service;
 
-import com.projeto.sistema.model.Funcionario;
-import com.projeto.sistema.repository.FuncionarioRepository;
+import com.projeto.sistema.model.Fornecedor;
+import com.projeto.sistema.repository.FornecedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class FuncionarioService {
+public class FornecedorService {
 
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private FornecedorRepository fornecedorRepository;
 
-    public List<Funcionario> listar() {
-        return funcionarioRepository.findAll();
+    public List<Fornecedor> listar() {
+        return fornecedorRepository.findAll();
     }
 
-    public Funcionario buscarPorId(Long id) {
-        if (!funcionarioRepository.existsById(id)) {
-            throw new RuntimeException("Funcionário não existe");
+    public Fornecedor buscarPorId(Long id) {
+        if (!fornecedorRepository.existsById(id)) {
+            throw new RuntimeException("Fornecedor não existe");
         }
 
-        return funcionarioRepository.findById(id).get();
+        return fornecedorRepository.findById(id).get();
     }
 
-    public void salvar(Funcionario funcionario) {
-        funcionarioRepository.saveAndFlush(funcionario);
+    public void salvar(Fornecedor fornecedor) {
+        fornecedorRepository.saveAndFlush(fornecedor);
     }
 
-    public void deletar(Funcionario funcionario) {
-        funcionarioRepository.delete(funcionario);
+    public void deletar(Fornecedor fornecedor) {
+        fornecedorRepository.delete(fornecedor);
     }
 
     public void deletarPorId(Long id) {
-        if (!funcionarioRepository.existsById(id)) {
-            throw new RuntimeException("Funcionário não existe");
+        if (!fornecedorRepository.existsById(id)) {
+            throw new RuntimeException("Fornecedor não existe");
         }
 
-        funcionarioRepository.deleteById(id);
+        fornecedorRepository.deleteById(id);
     }
 }

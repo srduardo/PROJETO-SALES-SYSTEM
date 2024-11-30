@@ -1,43 +1,43 @@
 package com.projeto.sistema.service;
 
-import com.projeto.sistema.model.Fornecedor;
-import com.projeto.sistema.repository.FornecedorRepository;
+import com.projeto.sistema.model.Cliente;
+import com.projeto.sistema.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class FornecedorService {
+public class ClienteService {
 
     @Autowired
-    private FornecedorRepository fornecedorRepository;
+    private ClienteRepository clienteRepository;
 
-    public List<Fornecedor> listar() {
-        return fornecedorRepository.findAll();
+    public List<Cliente> listar() {
+        return clienteRepository.findAll();
     }
 
-    public Fornecedor buscarPorId(Long id) {
-        if (!fornecedorRepository.existsById(id)) {
-            throw new RuntimeException("Fornecedor não existe");
+    public Cliente buscarPorId(Long id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new RuntimeException("Cliente não existe");
         }
 
-        return fornecedorRepository.findById(id).get();
+        return clienteRepository.findById(id).get();
     }
 
-    public void salvar(Fornecedor fornecedor) {
-        fornecedorRepository.saveAndFlush(fornecedor);
+    public void salvar(Cliente cliente) {
+        clienteRepository.saveAndFlush(cliente);
     }
 
-    public void deletar(Fornecedor fornecedor) {
-        fornecedorRepository.delete(fornecedor);
+    public void deletar(Cliente cliente) {
+        clienteRepository.delete(cliente);
     }
 
     public void deletarPorId(Long id) {
-        if (!fornecedorRepository.existsById(id)) {
-            throw new RuntimeException("Fornecedor não existe");
+        if (!clienteRepository.existsById(id)) {
+            throw new RuntimeException("Cliente não existe");
         }
 
-        fornecedorRepository.deleteById(id);
+        clienteRepository.deleteById(id);
     }
 }

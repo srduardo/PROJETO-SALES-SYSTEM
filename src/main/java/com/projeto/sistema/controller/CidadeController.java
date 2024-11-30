@@ -1,8 +1,8 @@
 package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Cidade;
-import com.projeto.sistema.repository.CidadeRepository;
-import com.projeto.sistema.repository.EstadoRepository;
+import com.projeto.sistema.service.CidadeService;
+import com.projeto.sistema.service.EstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,35 +16,35 @@ import java.util.Optional;
 @Controller
 public class CidadeController {
     @Autowired
-    private CidadeRepository cidadeRepository;
+    private CidadeService cidadeService;
     @Autowired
-    private EstadoRepository estadoRepository;
+    private EstadoService estadoService;
 
     @GetMapping("/cadastroCidade")
     public ModelAndView cadastrar(Cidade cidade) {
         ModelAndView mv = new ModelAndView("administrativo/cidades/cadastro");
         mv.addObject("cidade", cidade);
-        mv.addObject("listaEstados", estadoRepository.findAll());
+        mv.addObject("listaEstados", estadoService.listar());
         return mv;
     }
 
     @GetMapping("/listarCidade")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/cidades/lista");
-        mv.addObject("listaCidades", cidadeRepository.findAll());
+        mv.addObject("listaCidades", cidadeService.listar());
         return mv;
     }
 
     @GetMapping("/editarCidade/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Cidade> cidade = cidadeRepository.findById(id);
-        return cadastrar(cidade.get());
+        Cidade cidade = cidadeService.buscarPorId(id);
+        return cadastrar(cidade);
     }
 
     @GetMapping("/removerCidade/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Cidade> cidade = cidadeRepository.findById(id);
-        cidadeRepository.delete(cidade.get());
+        Cidade cidade = cidadeService.buscarPorId(id);
+        cidadeService.deletar(cidade);
         return listar();
     }
 
@@ -54,7 +54,7 @@ public class CidadeController {
             return cadastrar(cidade);
         }
 
-        cidadeRepository.saveAndFlush(cidade);
+        cidadeService.salvar(cidade);
         return cadastrar(new Cidade());
     }
 }

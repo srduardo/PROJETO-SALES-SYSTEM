@@ -1,8 +1,8 @@
 package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Cliente;
-import com.projeto.sistema.repository.CidadeRepository;
-import com.projeto.sistema.repository.ClienteRepository;
+import com.projeto.sistema.service.CidadeService;
+import com.projeto.sistema.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,35 +16,35 @@ import java.util.Optional;
 @Controller
 public class ClienteController {
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
     @Autowired
-    private CidadeRepository cidadeRepository;
+    private CidadeService cidadeService;
 
     @GetMapping("/cadastroCliente")
     public ModelAndView cadastrar(Cliente cliente) {
         ModelAndView mv = new ModelAndView("administrativo/clientes/cadastro");
         mv.addObject("cliente", cliente);
-        mv.addObject("listaCidades", cidadeRepository.findAll());
+        mv.addObject("listaCidades", cidadeService.listar());
         return mv;
     }
 
     @GetMapping("/listarCliente")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/clientes/lista");
-        mv.addObject("listaClientes", clienteRepository.findAll());
+        mv.addObject("listaClientes", clienteService.listar());
         return mv;
     }
 
     @GetMapping("/editarCliente/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Cliente> cliente = clienteRepository.findById(id);
-        return cadastrar(cliente.get());
+        Cliente cliente = clienteService.buscarPorId(id);
+        return cadastrar(cliente);
     }
 
     @GetMapping("/removerCliente/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Cliente> cliente = clienteRepository.findById(id);
-        clienteRepository.delete(cliente.get());
+        Cliente cliente = clienteService.buscarPorId(id);
+        clienteService.deletar(cliente);
         return listar();
     }
 
@@ -54,7 +54,7 @@ public class ClienteController {
             return cadastrar(cliente);
         }
 
-        clienteRepository.saveAndFlush(cliente);
+        clienteService.salvar(cliente);
         return cadastrar(new Cliente());
     }
 }

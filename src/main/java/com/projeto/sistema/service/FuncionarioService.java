@@ -1,35 +1,43 @@
 package com.projeto.sistema.service;
 
-import com.projeto.sistema.model.Cidade;
-import com.projeto.sistema.repository.CidadeRepository;
+import com.projeto.sistema.model.Funcionario;
+import com.projeto.sistema.repository.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CidadeService {
+public class FuncionarioService {
 
     @Autowired
-    private CidadeRepository cidadeRepository;
+    private FuncionarioRepository funcionarioRepository;
 
-    public List<Cidade> listar() {
-        return cidadeRepository.findAll();
+    public List<Funcionario> listar() {
+        return funcionarioRepository.findAll();
     }
 
-    public Cidade buscarPorId(Long id) {
-        return cidadeRepository.findById(id).get();
+    public Funcionario buscarPorId(Long id) {
+        if (!funcionarioRepository.existsById(id)) {
+            throw new RuntimeException("Funcionário não existe");
+        }
+
+        return funcionarioRepository.findById(id).get();
     }
 
-    public void salvar(Cidade cidade) {
-        cidadeRepository.saveAndFlush(cidade);
+    public void salvar(Funcionario funcionario) {
+        funcionarioRepository.saveAndFlush(funcionario);
     }
 
-    public void deletar(Cidade cidade) {
-        cidadeRepository.delete(cidade);
+    public void deletar(Funcionario funcionario) {
+        funcionarioRepository.delete(funcionario);
     }
 
     public void deletarPorId(Long id) {
-        cidadeRepository.deleteById(id);
+        if (!funcionarioRepository.existsById(id)) {
+            throw new RuntimeException("Funcionário não existe");
+        }
+
+        funcionarioRepository.deleteById(id);
     }
 }

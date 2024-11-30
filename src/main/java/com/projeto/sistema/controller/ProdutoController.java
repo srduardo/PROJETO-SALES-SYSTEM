@@ -1,7 +1,7 @@
 package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Produto;
-import com.projeto.sistema.repository.ProdutoRepository;
+import com.projeto.sistema.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Controller
 public class ProdutoController {
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private ProdutoService produtoService;
 
     @GetMapping("/cadastroProduto")
     public ModelAndView cadastrar(Produto produto) {
@@ -27,20 +27,20 @@ public class ProdutoController {
     @GetMapping("/listarProduto")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/produtos/lista");
-        mv.addObject("listaProdutos", produtoRepository.findAll());
+        mv.addObject("listaProdutos", produtoService.listar());
         return mv;
     }
 
     @GetMapping("/editarProduto/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Produto> produto = produtoRepository.findById(id);
-        return cadastrar(produto.get());
+        Produto produto = produtoService.buscarPorId(id);
+        return cadastrar(produto);
     }
 
     @GetMapping("/removerProduto/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Produto> produto = produtoRepository.findById(id);
-        produtoRepository.delete(produto.get());
+        Produto produto = produtoService.buscarPorId(id);
+        produtoService.deletar(produto);
         return listar();
     }
 
@@ -50,7 +50,7 @@ public class ProdutoController {
             return cadastrar(produto);
         }
 
-        produtoRepository.saveAndFlush(produto);
+        produtoService.salvar(produto);
         return cadastrar(new Produto());
     }
 }

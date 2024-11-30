@@ -1,35 +1,60 @@
 package com.projeto.sistema.service;
 
-import com.projeto.sistema.model.Entrada;
-import com.projeto.sistema.repository.EntradaRepository;
+import com.projeto.sistema.model.ItemEntrada;
+import com.projeto.sistema.model.Produto;
+import com.projeto.sistema.repository.ItemEntradaRepository;
+import com.projeto.sistema.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class EntradaService {
+public class ItemEntradaService {
 
     @Autowired
-    private EntradaRepository entradaRepository;
+    private ItemEntradaRepository itemEntradaRepository;
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
-    public List<Entrada> listar() {
-        return entradaRepository.findAll();
+    public List<ItemEntrada> listar() {
+        return itemEntradaRepository.findAll();
     }
 
-    public Entrada buscarPorId(Long id) {
-        return entradaRepository.findById(id).get();
+    public ItemEntrada buscarPorId(Long id) {
+        return itemEntradaRepository.findById(id).get();
     }
 
-    public void salvar(Entrada entrada) {
-        entradaRepository.saveAndFlush(entrada);
+    public void salvar(ItemEntrada itemEntrada) {
+        itemEntradaRepository.saveAndFlush(itemEntrada);
     }
 
-    public void deletar(Entrada entrada) {
-        entradaRepository.delete(entrada);
+    public void deletar(ItemEntrada itemEntrada) {
+        itemEntradaRepository.delete(itemEntrada);
     }
 
     public void deletarPorId(Long id) {
-        entradaRepository.deleteById(id);
+        itemEntradaRepository.deleteById(id);
+    }
+
+    public ItemEntrada darBaixaNoEstoqueAoDeletarItemEntrada(List<ItemEntrada> listaItemEntrada, Long idSequencia) {
+
+        for (ItemEntrada it : listaItemEntrada) {
+            if (it.getIdSequencia().equals(idSequencia)) {
+                Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
+                if (prod.isPresent()) {
+                    Produto produto = prod.get();
+                    produto.setEstoque(produto.getEstoque() - it.getQuantidade());
+                }
+
+                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - (it.getValor() * it.getQuantidade()));
+                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
+
+                return it;
+            }
+        }
+
+        return new ItemEntrada();
     }
 }

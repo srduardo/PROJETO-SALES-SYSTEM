@@ -1,8 +1,8 @@
 package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Funcionario;
-import com.projeto.sistema.repository.FuncionarioRepository;
-import com.projeto.sistema.repository.CidadeRepository;
+import com.projeto.sistema.service.FuncionarioService;
+import com.projeto.sistema.service.CidadeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,35 +16,35 @@ import java.util.Optional;
 @Controller
 public class FuncionarioController {
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private FuncionarioService funcionarioService;
     @Autowired
-    private CidadeRepository cidadeRepository;
+    private CidadeService cidadeService;
 
     @GetMapping("/cadastroFuncionario")
     public ModelAndView cadastrar(Funcionario funcionario) {
         ModelAndView mv = new ModelAndView("administrativo/funcionarios/cadastro");
         mv.addObject("funcionario", funcionario);
-        mv.addObject("listaCidades", cidadeRepository.findAll());
+        mv.addObject("listaCidades", cidadeService.listar());
         return mv;
     }
 
     @GetMapping("/listarFuncionario")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/funcionarios/lista");
-        mv.addObject("listaFuncionarios", funcionarioRepository.findAll());
+        mv.addObject("listaFuncionarios", funcionarioService.listar());
         return mv;
     }
 
     @GetMapping("/editarFuncionario/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-        return cadastrar(funcionario.get());
+        Funcionario funcionario = funcionarioService.buscarPorId(id);
+        return cadastrar(funcionario);
     }
 
     @GetMapping("/removerFuncionario/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-        funcionarioRepository.delete(funcionario.get());
+        Funcionario funcionario = funcionarioService.buscarPorId(id);
+        funcionarioService.deletar(funcionario);
         return listar();
     }
 
@@ -54,7 +54,7 @@ public class FuncionarioController {
             return cadastrar(funcionario);
         }
 
-        funcionarioRepository.saveAndFlush(funcionario);
+        funcionarioService.salvar(funcionario);
         return cadastrar(new Funcionario());
     }
 }

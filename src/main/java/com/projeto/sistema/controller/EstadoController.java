@@ -2,6 +2,7 @@ package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Estado;
 import com.projeto.sistema.repository.EstadoRepository;
+import com.projeto.sistema.service.EstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -14,8 +15,9 @@ import java.util.Optional;
 
 @Controller
 public class EstadoController {
+
     @Autowired
-    private EstadoRepository estadoRepository;
+    private EstadoService estadoService;
 
     @GetMapping("/cadastroEstado")
     public ModelAndView cadastrar(Estado estado) {
@@ -27,20 +29,20 @@ public class EstadoController {
     @GetMapping("/listarEstado")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/estados/lista");
-        mv.addObject("listaEstados", estadoRepository.findAll());
+        mv.addObject("listaEstados", estadoService.listar());
         return mv;
     }
 
     @GetMapping("/editarEstado/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Estado> estado = estadoRepository.findById(id);
-        return cadastrar(estado.get());
+        Estado estado = estadoService.buscarPorId(id);
+        return cadastrar(estado);
     }
 
     @GetMapping("/removerEstado/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Estado> estado = estadoRepository.findById(id);
-        estadoRepository.delete(estado.get());
+        Estado estado = estadoService.buscarPorId(id);
+        estadoService.deletar(estado);
         return listar();
     }
 
@@ -50,7 +52,7 @@ public class EstadoController {
             return cadastrar(estado);
         }
 
-        estadoRepository.saveAndFlush(estado);
+        estadoService.salvar(estado);
         return cadastrar(new Estado());
     }
 }

@@ -1,8 +1,8 @@
 package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Fornecedor;
-import com.projeto.sistema.repository.CidadeRepository;
-import com.projeto.sistema.repository.FornecedorRepository;
+import com.projeto.sistema.service.CidadeService;
+import com.projeto.sistema.service.FornecedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,35 +16,35 @@ import java.util.Optional;
 @Controller
 public class FornecedorController {
     @Autowired
-    private FornecedorRepository fornecedorRepository;
+    private FornecedorService fornecedorService;
     @Autowired
-    private CidadeRepository cidadeRepository;
+    private CidadeService cidadeService;
 
     @GetMapping("/cadastroFornecedor")
     public ModelAndView cadastrar(Fornecedor fornecedor) {
         ModelAndView mv = new ModelAndView("administrativo/fornecedores/cadastro");
         mv.addObject("fornecedor", fornecedor);
-        mv.addObject("listaCidades", cidadeRepository.findAll());
+        mv.addObject("listaCidades", cidadeService.listar());
         return mv;
     }
 
     @GetMapping("/listarFornecedor")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/fornecedores/lista");
-        mv.addObject("listaFornecedores", fornecedorRepository.findAll());
+        mv.addObject("listaFornecedores", fornecedorService.listar());
         return mv;
     }
 
     @GetMapping("/editarFornecedor/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Fornecedor> fornecedor = fornecedorRepository.findById(id);
-        return cadastrar(fornecedor.get());
+        Fornecedor fornecedor = fornecedorService.buscarPorId(id);
+        return cadastrar(fornecedor);
     }
 
     @GetMapping("/removerFornecedor/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Fornecedor> fornecedor = fornecedorRepository.findById(id);
-        fornecedorRepository.delete(fornecedor.get());
+        Fornecedor fornecedor = fornecedorService.buscarPorId(id);
+        fornecedorService.deletar(fornecedor);
         return listar();
     }
 
@@ -54,7 +54,7 @@ public class FornecedorController {
             return cadastrar(fornecedor);
         }
 
-        fornecedorRepository.saveAndFlush(fornecedor);
+        fornecedorService.salvar(fornecedor);
         return cadastrar(new Fornecedor());
     }
 }

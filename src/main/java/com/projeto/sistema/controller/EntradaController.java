@@ -3,7 +3,7 @@ package com.projeto.sistema.controller;
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
 import com.projeto.sistema.model.Produto;
-import com.projeto.sistema.repository.*;
+import com.projeto.sistema.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,15 +19,15 @@ import java.util.Optional;
 @Controller
 public class EntradaController {
     @Autowired
-    private EntradaRepository entradaRepository;
+    private EntradaService entradaService;
     @Autowired
-    private ItemEntradaRepository itemEntradaRepository;
+    private ItemEntradaService itemEntradaService;
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private ProdutoService produtoService;
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private FuncionarioService funcionarioService;
     @Autowired
-    private FornecedorRepository fornecedorRepository;
+    private FornecedorService fornecedorService;
 
     private List<ItemEntrada> listaItemEntrada = new ArrayList<ItemEntrada>();
 
@@ -37,72 +37,42 @@ public class EntradaController {
         mv.addObject("entrada", entrada);
         mv.addObject("itemEntrada", itemEntrada);
         mv.addObject("listaItemEntrada", this.listaItemEntrada);
-        mv.addObject("listaFuncionarios", funcionarioRepository.findAll());
-        mv.addObject("listaFornecedores", fornecedorRepository.findAll());
-        mv.addObject("listaProdutos", produtoRepository.findAll());
+        mv.addObject("listaFuncionarios", funcionarioService.listar());
+        mv.addObject("listaFornecedores", fornecedorService.listar());
+        mv.addObject("listaProdutos", produtoService.listar());
         return mv;
     }
 
     @GetMapping("/listarEntrada")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/entradas/lista");
-        mv.addObject("listaEntradas", entradaRepository.findAll());
+        mv.addObject("listaEntradas", entradaService.listar());
         return mv;
     }
 
     @GetMapping("/editarEntrada/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Entrada> entrada = entradaRepository.findById(id);
-        this.listaItemEntrada = itemEntradaRepository.buscarPorEntrada(id);
-        return cadastrar(entrada.get(), new ItemEntrada());
+        Entrada entrada = entradaService.buscarPorId(id);
+        this.listaItemEntrada = itemEntradaService.listar();
+        return cadastrar(entrada, new ItemEntrada());
     }
 
     @GetMapping("/removerEntrada/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
-        Optional<Entrada> entrada = entradaRepository.findById(id);
+        Entrada entrada = entradaService.buscarPorId(id);
+        this.listaItemEntrada = entradaService.darBaixaNoEstoqueAoDeletarEntrada(entrada);
+        entradaService.deletar(entrada);
 
-        this.listaItemEntrada = itemEntradaRepository.findAll();
-
-        for (ItemEntrada it : this.listaItemEntrada) {
-            if (it.getEntrada().getId().equals(id)) {
-                it.getProduto().setEstoque(it.getProduto().getEstoque() - it.getQuantidade());
-                itemEntradaRepository.deleteById(it.getId());
-            }
-        }
-
-        int tamanhoListaItemEntrada = this.listaItemEntrada.size();
-
-        for (int i = 0; i < tamanhoListaItemEntrada - 1; i++) {
-            ItemEntrada listaItemEntradaDeletados = this.listaItemEntrada.remove(i);
-        }
-
-        entradaRepository.delete(entrada.get());
         return listar();
     }
 
     @GetMapping("/removerItemEntrada/{idSequencia}")
     public ModelAndView removerItemEntrada(@PathVariable("idSequencia") Long idSequencia) {
-        ItemEntrada itemEntrada = null;
-
-        for (ItemEntrada it : this.listaItemEntrada) {
-            if (it.getIdSequencia().equals(idSequencia)) {
-                itemEntrada = it;
-                Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
-
-                if (prod.isPresent()) {
-                    Produto produto = prod.get();
-                    produto.setEstoque(produto.getEstoque() - it.getQuantidade());
-                }
-
-                it.getEntrada().setValorTotal(it.getEntrada().getValorTotal() - (it.getValor() * it.getQuantidade()));
-                it.getEntrada().setQuantidadeTotal(it.getEntrada().getQuantidadeTotal() - it.getQuantidade());
-            }
-        }
-
+        ItemEntrada itemEntrada =  itemEntradaService.darBaixaNoEstoqueAoDeletarItemEntrada(this.listaItemEntrada, idSequencia);
         Entrada entrada = itemEntrada.getEntrada();
         listaItemEntrada.remove(itemEntrada);
 
-        if (entrada.getId() != null && entradaRepository.findById(entrada.getId()).isEmpty()) {
+        if (entrada.getId() != null && entradaService.buscarPorId(entrada.getId()) == null) {
             return cadastrar(new Entrada(), new ItemEntrada());
         }
 
@@ -126,18 +96,18 @@ public class EntradaController {
             itemEntrada.setEntrada(entrada);
             this.listaItemEntrada.add(itemEntrada);
         } else if (acao.equals("salvar")) {
-            entradaRepository.saveAndFlush(entrada);
+            entradaService.salvar(entrada);
 
             for (ItemEntrada it : listaItemEntrada) {
                 it.setEntrada(entrada);
-                itemEntradaRepository.saveAndFlush(it);
+                itemEntradaService.salvar(it);
 
-                Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
-                Produto produto = prod.get();
+                Produto prod = produtoService.buscarPorId(it.getProduto().getId());
+                Produto produto = prod;
                 produto.setEstoque(produto.getEstoque() + it.getQuantidade());
                 produto.setPrecoVenda(it.getValor());
                 produto.setPrecoCusto(it.getValorCusto());
-                produtoRepository.saveAndFlush(produto);
+                produtoService.salvar(produto);
 
                 this.listaItemEntrada = new ArrayList<>();
             }
