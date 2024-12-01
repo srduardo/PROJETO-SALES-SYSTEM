@@ -42,37 +42,37 @@
             <label>ID:</label>
             <input type="text" readonly="true" class="form-control" id="id" th:field="*{id}">
             <label>Nome Produto:</label>
-            <input type="text" class="form-control" id="nome" th:field="*{nome}">
+            <input type="text" required class="form-control" id="nome" th:field="*{nome}">
             <label>Código de Barras:</label>
-            <input type="text" class="form-control" id="codigoBarras" th:field="*{codigoBarras}">
+            <input type="text" required class="form-control" id="codigoBarras" th:field="*{codigoBarras}">
             <label>Unidade de Medida:</label>
-            <input type="text" class="form-control" id="unidadeMedida" th:field="*{unidadeMedida}">
+            <input type="text" required class="form-control" id="unidadeMedida" th:field="*{unidadeMedida}">
 
             <div class="row">
 
                 <div class="col">
                     <label>Estoque:</label>
-                    <input type="number" class="form-control" id="estoque" th:field="*{estoque}">
+                    <input type="number" required class="form-control" id="estoque" th:field="*{estoque}">
                 </div>
 
                 <div class="col">
                     <label>Preço de Custo:</label>
-                    <input type="number" class="form-control" id="precoCusto" th:field="*{precoCusto}">
+                    <input type="number" required class="form-control" id="precoCusto" th:field="*{precoCusto}">
                 </div>
 
                 <div class="col">
                     <label>Preço de Venda:</label>
-                    <input type="number" class="form-control" id="precoVenda" th:field="*{precoVenda}">
+                    <input type="number" required class="form-control" id="precoVenda" th:field="*{precoVenda}">
                 </div>
 
                 <div class="col">
                     <label>Lucro:</label>
-                    <input type="number" class="form-control" id="lucro" th:field="*{lucro}">
+                    <input type="number" required class="form-control" id="lucro" th:field="*{lucro}">
                 </div>
 
                 <div class="col">
                     <label>Margem de Lucro:</label>
-                    <input type="number" class="form-control" id="margemLucro" th:field="*{margemLucro}">
+                    <input type="number" required class="form-control" id="margemLucro" th:field="*{margemLucro}">
                 </div>
 
             </div>

@@ -48,15 +48,15 @@
                 </div>
                 <div class="col">
                     <label>Quantidade:</label>
-                    <input type="text" class="form-control" id="quantidade" th:field="*{quantidade}">
+                    <input type="text" required class="form-control" id="quantidade" th:field="*{quantidade}">
                 </div>
                 <div class="col">
                     <label>Valor de Custo:</label>
-                    <input type="text" class="form-control" id="valorCusto" th:field="*{valorCusto}">
+                    <input type="text" required class="form-control" id="valorCusto" th:field="*{valorCusto}">
                 </div>
                 <div class="col">
                     <label>Valor de Venda:</label>
-                    <input type="text" style="margin-bottom: 10px" class="form-control" id="valor" th:field="*{valor}">
+                    <input type="text" required style="margin-bottom: 10px" class="form-control" id="valor" th:field="*{valor}">
                 </div>
                 <div class="col-1.5">
                     <button name="acao" th:value="itens" style="margin-top: 32px" type="submit" class="btn btn-dark"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Adicionar</button>
@@ -112,7 +112,7 @@
                             <td th:text="${itemEntrada.valorCusto}"></td>
                             <td th:text="${itemEntrada.valor}"></td>
                             <td colspan="2">
-                                <a th:href="@{/editarItemEntrada/{id}(id=${itemEntrada.id})}"><i class="fa-solid fa-pen-to-square" style="color: #63E6BE;"></i></a>
+                                <a th:href="@{/editarItemEntrada/{idSequencia}(idSequencia=${itemEntrada.idSequencia})}"><i class="fa-solid fa-pen-to-square" style="color: #63E6BE;"></i></a>
                                 <a th:href="@{/removerItemEntrada/{idSequencia}(idSequencia=${itemEntrada.idSequencia})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
                             </td>
                         </tr>

@@ -1,5 +1,6 @@
 package com.projeto.sistema.service;
 
+import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
 import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.repository.ItemEntradaRepository;
@@ -56,5 +57,19 @@ public class ItemEntradaService {
         }
 
         return new ItemEntrada();
+    }
+
+    public void adicionarItemEntrada(List<ItemEntrada> listaItemEntrada, Entrada entrada, ItemEntrada itemEntrada) {
+        entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
+        entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
+
+        if (listaItemEntrada.isEmpty()) {
+            itemEntrada.setIdSequencia(1L);
+        } else {
+            itemEntrada.setIdSequencia(listaItemEntrada.get(listaItemEntrada.size() - 1).getIdSequencia() + 1L);
+        }
+
+        itemEntrada.setEntrada(entrada);
+        listaItemEntrada.add(itemEntrada);
     }
 }

@@ -2,7 +2,6 @@ package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
-import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class EntradaController {
@@ -57,6 +55,23 @@ public class EntradaController {
         return cadastrar(entrada, new ItemEntrada());
     }
 
+    @GetMapping("/editarItemEntrada/{idSequencia}")
+    public ModelAndView editarItemEntrada(@PathVariable("idSequencia") Long idSequencia) {
+        ItemEntrada itemEntrada = null;
+
+        for (ItemEntrada it : this.listaItemEntrada) {
+            if (it.getIdSequencia().equals(idSequencia)) {
+                ModelAndView mv = new ModelAndView("/administrativo/produtos/cadastro");
+                mv.addObject("produto", it.getProduto());
+                return mv;
+            }
+
+            itemEntrada = it;
+        }
+
+        return cadastrar(itemEntrada.getEntrada(), new ItemEntrada());
+    }
+
     @GetMapping("/removerEntrada/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
         Entrada entrada = entradaService.buscarPorId(id);
@@ -86,41 +101,14 @@ public class EntradaController {
         }
 
         if (acao.equals("itens")) {
-            entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
-            entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
-            if (this.listaItemEntrada.isEmpty()) {
-                itemEntrada.setIdSequencia(1L);
-            } else {
-                itemEntrada.setIdSequencia(this.listaItemEntrada.get(this.listaItemEntrada.size() - 1).getIdSequencia() + 1L);
-            }
-            itemEntrada.setEntrada(entrada);
-            this.listaItemEntrada.add(itemEntrada);
+            itemEntradaService.adicionarItemEntrada(listaItemEntrada, entrada, itemEntrada);
         } else if (acao.equals("salvar")) {
             entradaService.salvar(entrada);
-
-            for (ItemEntrada it : listaItemEntrada) {
-                it.setEntrada(entrada);
-                itemEntradaService.salvar(it);
-
-                Produto prod = produtoService.buscarPorId(it.getProduto().getId());
-                Produto produto = prod;
-                produto.setEstoque(produto.getEstoque() + it.getQuantidade());
-                produto.setPrecoVenda(it.getValor());
-                produto.setPrecoCusto(it.getValorCusto());
-                produtoService.salvar(produto);
-
-                this.listaItemEntrada = new ArrayList<>();
-            }
+            entradaService.adicionarItensAoEstoqueAoSalvarEntrada(entrada, this.listaItemEntrada);
+            this.listaItemEntrada = new ArrayList<>();
             return cadastrar(new Entrada(), new ItemEntrada());
         }
+
         return cadastrar(entrada, new ItemEntrada());
-    }
-
-    public List<ItemEntrada> getListaItemEntrada() {
-        return listaItemEntrada;
-    }
-
-    public void setListaItemEntrada(List<ItemEntrada> listaItemEntrada) {
-        this.listaItemEntrada = listaItemEntrada;
     }
 }

@@ -2,11 +2,14 @@ package com.projeto.sistema.service;
 
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
+import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.repository.EntradaRepository;
 import com.projeto.sistema.repository.ItemEntradaRepository;
+import com.projeto.sistema.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,6 +19,8 @@ public class EntradaService {
     private EntradaRepository entradaRepository;
     @Autowired
     private ItemEntradaRepository itemEntradaRepository;
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
     public List<Entrada> listar() {
         return entradaRepository.findAll();
@@ -59,5 +64,19 @@ public class EntradaService {
         }
 
         return listaItemEntrada;
+    }
+
+    public void adicionarItensAoEstoqueAoSalvarEntrada(Entrada entrada, List<ItemEntrada> listaItemEntrada) {
+        for (ItemEntrada it : listaItemEntrada) {
+            it.setEntrada(entrada);
+            itemEntradaRepository.saveAndFlush(it);
+
+            Produto prod = produtoRepository.findById(it.getProduto().getId()).get();
+            Produto produto = prod;
+            produto.setEstoque(produto.getEstoque() + it.getQuantidade());
+            produto.setPrecoVenda(it.getValor());
+            produto.setPrecoCusto(it.getValorCusto());
+            produtoRepository.saveAndFlush(produto);
+        }
     }
 }
