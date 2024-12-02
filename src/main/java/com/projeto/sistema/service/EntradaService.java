@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 @Service
 public class EntradaService {
@@ -66,12 +68,15 @@ public class EntradaService {
             it.setEntrada(entrada);
             itemEntradaRepository.saveAndFlush(it);
 
-            Produto prod = produtoRepository.findById(it.getProduto().getId()).get();
-            Produto produto = prod;
-            produto.setEstoque(produto.getEstoque() + it.getQuantidade());
-            produto.setPrecoVenda(it.getValor());
-            produto.setPrecoCusto(it.getValorCusto());
-            produtoRepository.saveAndFlush(produto);
+            Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
+
+            if (prod.isPresent()) {
+                Produto produto = prod.get();
+                produto.setEstoque(produto.getEstoque() + it.getQuantidade());
+                produto.setPrecoVenda(it.getValor());
+                produto.setPrecoCusto(it.getValorCusto());
+                produtoRepository.saveAndFlush(produto);
+            }
         }
     }
 }
