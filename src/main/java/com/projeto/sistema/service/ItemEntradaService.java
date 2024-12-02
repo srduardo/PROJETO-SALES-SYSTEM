@@ -2,6 +2,7 @@ package com.projeto.sistema.service;
 
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
+import com.projeto.sistema.model.ItemVenda;
 import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.repository.ItemEntradaRepository;
 import com.projeto.sistema.repository.ProdutoRepository;
@@ -59,7 +60,34 @@ public class ItemEntradaService {
         return new ItemEntrada();
     }
 
+    public ItemEntrada validarValoresItemEntrada(ItemEntrada itemEntrada) {
+        Double[] listaDeValores = {itemEntrada.getQuantidade(), itemEntrada.getValorCusto(), itemEntrada.getValor()};
+        Double[] listaDeValoresDoProduto = {1.0, itemEntrada.getProduto().getPrecoCusto(), itemEntrada.getProduto().getPrecoVenda()};
+
+        for (int i = 0; i < listaDeValores.length; i++) {
+            if (listaDeValores[i] == null) {
+                listaDeValores[i] = listaDeValoresDoProduto[i];
+            }
+        }
+
+        itemEntrada.setQuantidade(listaDeValores[0]);
+        itemEntrada.setValorCusto(listaDeValores[1]);
+        itemEntrada.setValor(listaDeValores[2]);
+
+        return itemEntrada;
+    }
+
+    public List<ItemEntrada> reajustarIdSequencia(List<ItemEntrada> listaItemEntrada) {
+
+        for (int i = 0; i < listaItemEntrada.size(); i++) {
+            listaItemEntrada.get(i).setIdSequencia(i + 1L);
+        }
+
+        return listaItemEntrada;
+    }
+
     public void adicionarItemEntrada(List<ItemEntrada> listaItemEntrada, Entrada entrada, ItemEntrada itemEntrada) {
+        itemEntrada = validarValoresItemEntrada(itemEntrada);
         entrada.setValorTotal(entrada.getValorTotal() + (itemEntrada.getValor() * itemEntrada.getQuantidade()));
         entrada.setQuantidadeTotal(entrada.getQuantidadeTotal() + itemEntrada.getQuantidade());
 

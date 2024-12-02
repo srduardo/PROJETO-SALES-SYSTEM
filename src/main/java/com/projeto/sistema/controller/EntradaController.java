@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -86,6 +88,7 @@ public class EntradaController {
         ItemEntrada itemEntrada =  itemEntradaService.darBaixaNoEstoqueAoDeletarItemEntrada(this.listaItemEntrada, idSequencia);
         Entrada entrada = itemEntrada.getEntrada();
         listaItemEntrada.remove(itemEntrada);
+        listaItemEntrada = itemEntradaService.reajustarIdSequencia(this.listaItemEntrada);
 
         if (entrada.getId() != null && entradaService.buscarPorId(entrada.getId()) == null) {
             return cadastrar(new Entrada(), new ItemEntrada());
@@ -103,6 +106,8 @@ public class EntradaController {
         if (acao.equals("itens")) {
             itemEntradaService.adicionarItemEntrada(listaItemEntrada, entrada, itemEntrada);
         } else if (acao.equals("salvar")) {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
+            entrada.setDataEntrada(df.format(new Date()));
             entradaService.salvar(entrada);
             entradaService.adicionarItensAoEstoqueAoSalvarEntrada(entrada, this.listaItemEntrada);
             this.listaItemEntrada = new ArrayList<>();

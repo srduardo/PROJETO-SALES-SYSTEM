@@ -57,12 +57,7 @@ public class EntradaService {
             }
         }
 
-        int tamanhoListaItemEntrada = listaItemEntrada.size();
-
-        for (int i = 0; i < tamanhoListaItemEntrada - 1; i++) {
-            ItemEntrada listaItemEntradaDeletados = listaItemEntrada.remove(i);
-        }
-
+        listaItemEntrada.clear();
         return listaItemEntrada;
     }
 

@@ -15,7 +15,7 @@ public class Venda implements Serializable {
     private String obs;
     private Double valorTotal = 0.00;
     private Double quantidadeTotal = 0.00;
-    private Date dataVenda = new Date();
+    private String dataVenda;
     @ManyToOne
     private Cliente cliente;
     @ManyToOne
@@ -53,11 +53,11 @@ public class Venda implements Serializable {
         this.quantidadeTotal = quantidadeTotal;
     }
 
-    public Date getDataVenda() {
+    public String getDataVenda() {
         return dataVenda;
     }
 
-    public void setDataVenda(Date dataVenda) {
+    public void setDataVenda(String dataVenda) {
         this.dataVenda = dataVenda;
     }
 

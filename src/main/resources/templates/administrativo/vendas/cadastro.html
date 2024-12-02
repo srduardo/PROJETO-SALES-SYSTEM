@@ -48,7 +48,7 @@
                 </div>
                 <div class="col">
                     <label>Quantidade:</label>
-                    <input type="text" required class="form-control" id="quantidade" th:field="*{quantidade}">
+                    <input type="text" class="form-control" id="quantidade" th:field="*{quantidade}">
                 </div>
                 <div class="col-1.5">
                     <button name="acao" th:value="itens" style="margin-top: 32px" type="submit" class="btn btn-dark"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Adicionar</button>
@@ -70,11 +70,14 @@
 
                     <label>Clientes:</label>
                     <select th:field="*{cliente}" class="form-control">
-                        <option th:each="for : ${listaClientes}" th:value="${for.id}" th:text="${for.nome}"></option>
+                        <option th:each="cli : ${listaClientes}" th:value="${cli.id}" th:text="${cli.nome}"></option>
                     </select>
 
                     <label>Quantidade Total:</label>
                     <input type="text" readonly class="form-control" id="quantidadeTotal" th:field="*{quantidadeTotal}">
+
+                    <label>Valor Total:</label>
+                    <input type="text" readonly class="form-control" id="valorTotal" th:field="*{valorTotal}">
 
                     <a href="/administrativo" style="margin-top: 15px" type="submit" class="btn btn-danger"><i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i> Voltar</a>
                     <a href="/listarVenda" style="margin-top: 15px" type="submit" class="btn btn-success"><i class="fa-solid fa-list-ul" style="color: #ffffff;"></i> Listar</a>
@@ -84,7 +87,7 @@
                     <table class="table table-striped" id="tabela" style="margin-top: 30px">
                         <thead class="bg-dark" style="color: white">
                         <tr>
-                            <td>ID</td>
+                            <td>N°</td>
                             <td>Produto</td>
                             <td>Quantidade</td>
                             <td>Valor Unitário</td>
@@ -95,13 +98,13 @@
 
                         <tbody>
                         <tr th:each="itemVenda: ${listaItemVenda}">
-                            <td th:text="${itemVenda.id}"></td>
+                            <td th:text="${itemVenda.idSequencia}"></td>
                             <td th:text="${itemVenda.produto.nome}"></td>
                             <td th:text="${itemVenda.quantidade}"></td>
                             <td th:text="${itemVenda.valor}"></td>
                             <td th:text="${itemVenda.subtotal}"></td>
                             <td colspan="2">
-                                <a th:href="@{/removerItemVenda/{id}(id=${itemVenda.id})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
+                                <a th:href="@{/removerItemVenda/{idSequencia}(idSequencia=${itemVenda.idSequencia})}"><i class="fa-solid fa-trash-can" style="color: #e14747;"></i></a>
                             </td>
                         </tr>
                         </tbody>

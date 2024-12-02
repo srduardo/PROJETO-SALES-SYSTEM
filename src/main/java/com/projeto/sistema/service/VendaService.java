@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VendaService {
@@ -46,36 +47,32 @@ public class VendaService {
     }
 
 
-    public List<ItemVenda> darBaixaNoEstoqueAoDeletarVenda(Venda Venda) {
+    public List<ItemVenda> adicionarAoEstoqueAoDeletarVenda(Venda Venda) {
         List<ItemVenda> listaItemVenda = itemVendaRepository.findAll();
 
         for (ItemVenda it : listaItemVenda) {
             if (it.getVenda().getId().equals(Venda.getId())) {
-                it.getProduto().setEstoque(it.getProduto().getEstoque() - it.getQuantidade());
+                it.getProduto().setEstoque(it.getProduto().getEstoque() + it.getQuantidade());
                 itemVendaRepository.deleteById(it.getId());
             }
         }
 
-        int tamanhoListaItemVenda = listaItemVenda.size();
-
-        for (int i = 0; i < tamanhoListaItemVenda - 1; i++) {
-            ItemVenda listaItemVendaDeletados = listaItemVenda.remove(i);
-        }
-
+        listaItemVenda.clear();
         return listaItemVenda;
     }
 
-    public void adicionarItensAoEstoqueAoSalvarVenda(Venda Venda, List<ItemVenda> listaItemVenda) {
+    public void removerItensDoEstoqueAoRealizarVenda(Venda Venda, List<ItemVenda> listaItemVenda) {
         for (ItemVenda it : listaItemVenda) {
             it.setVenda(Venda);
             itemVendaRepository.saveAndFlush(it);
 
-            Produto prod = produtoRepository.findById(it.getProduto().getId()).get();
-            Produto produto = prod;
-            produto.setEstoque(produto.getEstoque() + it.getQuantidade());
-            produto.setPrecoVenda(it.getValor());
-//            produto.setPrecoCusto(it.getValorCusto());
-            produtoRepository.saveAndFlush(produto);
+            Optional<Produto> prod = produtoRepository.findById(it.getProduto().getId());
+            if (prod.isPresent()) {
+                Produto produto = prod.get();
+                produto.setEstoque(produto.getEstoque() - it.getQuantidade());
+                produtoRepository.saveAndFlush(produto);
+            }
+
         }
     }
 }

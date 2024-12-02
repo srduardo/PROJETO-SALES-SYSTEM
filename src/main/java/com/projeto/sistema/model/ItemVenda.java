@@ -11,6 +11,7 @@ public class ItemVenda implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private Long idSequencia;
     private Double quantidade;
     private Double valor;
     private Double subtotal;
@@ -25,6 +26,14 @@ public class ItemVenda implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getIdSequencia() {
+        return idSequencia;
+    }
+
+    public void setIdSequencia(Long idSequencia) {
+        this.idSequencia = idSequencia;
     }
 
     public Double getQuantidade() {

@@ -2,8 +2,8 @@ package com.projeto.sistema.controller;
 
 import com.projeto.sistema.model.Venda;
 import com.projeto.sistema.model.ItemVenda;
-import com.projeto.sistema.model.Produto;
-import com.projeto.sistema.repository.*;
+import com.projeto.sistema.repository.VendaRepository;
+import com.projeto.sistema.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -12,24 +12,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class VendaController {
     @Autowired
-    private VendaRepository vendaRepository;
+    private VendaService vendaService;
     @Autowired
-    private ItemVendaRepository itemVendaRepository;
+    private ItemVendaService itemVendaService;
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private ProdutoService produtoService;
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private FuncionarioService funcionarioService;
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
     private List<ItemVenda> listaItemVenda = new ArrayList<ItemVenda>();
+    @Autowired
+    private VendaRepository vendaRepository;
 
     @GetMapping("/cadastroVenda")
     public ModelAndView cadastrar(Venda venda, ItemVenda itemVenda) {
@@ -37,32 +42,65 @@ public class VendaController {
         mv.addObject("venda", venda);
         mv.addObject("itemVenda", itemVenda);
         mv.addObject("listaItemVenda", this.listaItemVenda);
-        mv.addObject("listaFuncionarios", funcionarioRepository.findAll());
-        mv.addObject("listaClientes", clienteRepository.findAll());
-        mv.addObject("listaProdutos", produtoRepository.findAll());
+        mv.addObject("listaFuncionarios", funcionarioService.listar());
+        mv.addObject("listaClientes", clienteService.listar());
+        mv.addObject("listaProdutos", produtoService.listar());
         return mv;
     }
 
     @GetMapping("/listarVenda")
     public ModelAndView listar() {
         ModelAndView mv = new ModelAndView("/administrativo/vendas/lista");
-        mv.addObject("listaVendas", vendaRepository.findAll());
+        mv.addObject("listaVendas", vendaService.listar());
         return mv;
     }
 
     @GetMapping("/editarVenda/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
-        Optional<Venda> venda = vendaRepository.findById(id);
-        this.listaItemVenda = itemVendaRepository.buscarPorVenda(id);
-        return cadastrar(venda.get(), new ItemVenda());
+        Venda venda = vendaService.buscarPorId(id);
+        this.listaItemVenda = itemVendaService.listar();
+        return cadastrar(venda, new ItemVenda());
     }
 
-//    @GetMapping("/removerVenda/{id}")
-//    public ModelAndView remover(@PathVariable("id") Long id) {
-//        Optional<Venda> venda = vendaRepository.findById(id);
-//        vendaRepository.delete(venda.get());
-//        return listar();
-//    }
+    @GetMapping("/editarItemVenda/{idSequencia}")
+    public ModelAndView editarItemVenda(@PathVariable("idSequencia") Long idSequencia) {
+        ItemVenda itemVenda = null;
+
+        for (ItemVenda it : this.listaItemVenda) {
+            if (it.getIdSequencia().equals(idSequencia)) {
+                ModelAndView mv = new ModelAndView("/administrativo/produtos/cadastro");
+                mv.addObject("produto", it.getProduto());
+                return mv;
+            }
+
+            itemVenda = it;
+        }
+
+        return cadastrar(itemVenda.getVenda(), new ItemVenda());
+    }
+
+    @GetMapping("/removerVenda/{id}")
+    public ModelAndView remover(@PathVariable("id") Long id) {
+        Venda venda = vendaService.buscarPorId(id);
+        this.listaItemVenda = vendaService.adicionarAoEstoqueAoDeletarVenda(venda);
+        vendaService.deletar(venda);
+
+        return listar();
+    }
+
+    @GetMapping("/removerItemVenda/{idSequencia}")
+    public ModelAndView removerItemVenda(@PathVariable("idSequencia") Long idSequencia) {
+        ItemVenda itemVenda =  itemVendaService.retornarAoEstoqueAoDeletarItemVenda(this.listaItemVenda, idSequencia);
+        Venda venda = itemVenda.getVenda();
+        listaItemVenda.remove(itemVenda);
+        listaItemVenda = itemVendaService.reajustarIdSequencia(listaItemVenda);
+
+        if (venda.getId() != null && vendaService.buscarPorId(venda.getId()) == null) {
+            return cadastrar(new Venda(), new ItemVenda());
+        }
+
+        return cadastrar(venda, new ItemVenda());
+    }
 
     @PostMapping("/salvarVenda")
     public ModelAndView salvar(String acao, Venda venda, ItemVenda itemVenda, BindingResult result) {
@@ -71,38 +109,16 @@ public class VendaController {
         }
 
         if (acao.equals("itens")) {
-            itemVenda.setValor(itemVenda.getProduto().getPrecoVenda());
-            itemVenda.setSubtotal(itemVenda.getProduto().getPrecoVenda() * itemVenda.getQuantidade());
-            venda.setValorTotal(venda.getValorTotal() + (itemVenda.getValor() * itemVenda.getQuantidade()));
-            venda.setQuantidadeTotal(venda.getQuantidadeTotal() + itemVenda.getQuantidade());
-            this.listaItemVenda.add(itemVenda);
+            listaItemVenda = itemVendaService.adicionarItemVenda(listaItemVenda, venda, itemVenda);
         } else if (acao.equals("salvar")) {
-            vendaRepository.saveAndFlush(venda);
-
-            for (ItemVenda it : listaItemVenda) {
-                it.setVenda(venda);
-//                it.setSubtotal(it.getValor() * it.getQuantidade());
-
-                itemVendaRepository.saveAndFlush(it);
-
-                Optional<Produto> prod = produtoRepository.findById(it. getProduto().getId());
-                Produto produto = prod.get();
-                produto.setEstoque(produto.getEstoque() - it.getQuantidade());
-                produto.setPrecoVenda(it.getValor());
-                produtoRepository.saveAndFlush(produto);
-
-                this.listaItemVenda = new ArrayList<>();
-            }
+            DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
+            venda.setDataVenda(df.format(new Date()));
+            vendaService.salvar(venda);
+            vendaService.removerItensDoEstoqueAoRealizarVenda(venda, this.listaItemVenda);
+            this.listaItemVenda = new ArrayList<>();
             return cadastrar(new Venda(), new ItemVenda());
         }
+
         return cadastrar(venda, new ItemVenda());
-    }
-
-    public List<ItemVenda> getListaItemVenda() {
-        return listaItemVenda;
-    }
-
-    public void setListaItemVenda(List<ItemVenda> listaItemVenda) {
-        this.listaItemVenda = listaItemVenda;
     }
 }
