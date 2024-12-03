@@ -2,7 +2,8 @@
 FROM maven:3.8.6-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY pom.xml .
-COPY src ./src
+# Para o back-end
+COPY backend/src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Executar a aplicação com uma imagem mais leve
