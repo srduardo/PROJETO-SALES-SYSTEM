@@ -23,7 +23,6 @@ public class dbConfig {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.POSTGRESQL);
         adapter.setShowSql(true); // Mostrar o sql no console
-        adapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
         adapter.setPrepareConnection(true);
         return adapter;
     }
