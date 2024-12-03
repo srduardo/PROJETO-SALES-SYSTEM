@@ -2,7 +2,6 @@ package com.projeto.sistema.service;
 
 import com.projeto.sistema.model.Entrada;
 import com.projeto.sistema.model.ItemEntrada;
-import com.projeto.sistema.model.ItemVenda;
 import com.projeto.sistema.model.Produto;
 import com.projeto.sistema.repository.ItemEntradaRepository;
 import com.projeto.sistema.repository.ProdutoRepository;

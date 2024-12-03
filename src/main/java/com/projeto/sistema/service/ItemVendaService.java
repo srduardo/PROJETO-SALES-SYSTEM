@@ -1,6 +1,5 @@
 package com.projeto.sistema.service;
 
-import com.projeto.sistema.model.ItemEntrada;
 import com.projeto.sistema.model.Venda;
 import com.projeto.sistema.model.ItemVenda;
 import com.projeto.sistema.model.Produto;

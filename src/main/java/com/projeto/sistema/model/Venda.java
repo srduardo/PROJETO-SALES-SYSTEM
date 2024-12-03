@@ -3,7 +3,6 @@ package com.projeto.sistema.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 public class Venda implements Serializable {
