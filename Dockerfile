@@ -5,9 +5,10 @@ COPY pom.xml .
 # Para o back-end
 COPY backend/src ./src
 RUN mvn clean package -DskipTests
+RUN ls -l /app/target
 
 # Etapa 2: Executar a aplicação com uma imagem mais leve
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/sistema-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/sistema-0.0.1-SNAPSHOT.jar /app/sistema-0.0.1-SNAPSHOT.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
