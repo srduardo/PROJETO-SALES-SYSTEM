@@ -15,9 +15,6 @@ public class dbConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver"); // Declara as condigurações de acesso
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/loja");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
         return dataSource;
     }
 
@@ -26,7 +23,6 @@ public class dbConfig {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.POSTGRESQL);
         adapter.setShowSql(true); // Mostrar o sql no console
-        adapter.setGenerateDdl(true);
         adapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
         adapter.setPrepareConnection(true);
         return adapter;
