@@ -11,4 +11,4 @@ RUN ls -l /app/target
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/sistema-0.0.1-SNAPSHOT.jar /app/sistema-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/sistema-0.0.1-SNAPSHOT.jar"]
