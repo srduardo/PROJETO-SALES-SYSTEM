@@ -34,7 +34,11 @@ public class EntradaController {
     @GetMapping("/cadastroEntrada")
     public ModelAndView cadastrar(Entrada entrada, ItemEntrada itemEntrada) {
         ModelAndView mv = new ModelAndView("administrativo/entradas/cadastro");
-        mv.addObject("entrada", entrada);
+        if (this.listaItemEntrada.isEmpty()) {
+            mv.addObject("entrada", entrada);
+        } else {
+            mv.addObject("entrada", this.listaItemEntrada.get(this.listaItemEntrada.size() -1).getEntrada());
+        }
         mv.addObject("itemEntrada", itemEntrada);
         mv.addObject("listaItemEntrada", this.listaItemEntrada);
         mv.addObject("listaFuncionarios", funcionarioService.listar());
@@ -105,6 +109,7 @@ public class EntradaController {
 
         if (acao.equals("itens")) {
             this.listaItemEntrada = itemEntradaService.adicionarItemEntrada(this.listaItemEntrada, entrada, itemEntrada);
+            entrada = this.listaItemEntrada.get(this.listaItemEntrada.size() - 1).getEntrada();
         } else if (acao.equals("salvar")) {
             DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
             entrada.setDataEntrada(df.format(new Date()));
