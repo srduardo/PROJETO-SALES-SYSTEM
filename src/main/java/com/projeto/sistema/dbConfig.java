@@ -14,12 +14,14 @@ import javax.sql.DataSource;
 public class dbConfig {
     @Bean
     public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        String url = System.getenv("DATABASE_URL");
-        String user = System.getenv("DATABASE_USER");
-        String password = System.getenv("DATABASE_PASSWORD");
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl(System.getenv("DATABASE_URL"));
+        dataSource.setUsername(System.getenv("DATABASE_USER"));
+        dataSource.setUsername(System.getenv("DATABASE_PASSWORD"));
 
-        return DataSourceBuilder.create().url(url).username(user).password(password).build();
+        return dataSource;
     }
 
     @Bean
