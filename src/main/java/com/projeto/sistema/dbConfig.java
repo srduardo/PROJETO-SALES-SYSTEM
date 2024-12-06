@@ -1,5 +1,6 @@
 package com.projeto.sistema;
 
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -13,19 +14,28 @@ import javax.sql.DataSource;
 public class dbConfig {
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver"); // Declara as condigurações de acesso
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/loja");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
-        return dataSource;
+
+        String host = System.getenv("DATABASE_HOST");
+        String port = System.getenv("DATABASE_PORT");
+        String name = System.getenv("DATABASE_NAME");
+        String user = System.getenv("DATABASE_USER");
+        String password = System.getenv("DATABASE_PASSWORD");
+
+        if (host != null && port != null && name != null && user != null && password != null) {
+
+            String jdbcUrl = String.format("jdbc:postgres://%s:%s/%s", host, port, name);
+
+            return DataSourceBuilder.create().url(jdbcUrl).username(user).password(password).build();
+        } else {
+            throw new RuntimeException("Configuração do banco de dados não encontrada.");
+        }
     }
 
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.POSTGRESQL);
-        adapter.setShowSql(true); // Mostrar o sql no console
+        adapter.setShowSql(false); // Mostrar o sql no console
         adapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
         adapter.setPrepareConnection(true);
 
