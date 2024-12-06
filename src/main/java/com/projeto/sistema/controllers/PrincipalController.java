@@ -2,11 +2,12 @@ package com.projeto.sistema.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class PrincipalController {
 
-    @GetMapping("/administrativo")
+    @GetMapping("/")
     public String acessarPrincipal() {
         return "administrativo/home";
     }
