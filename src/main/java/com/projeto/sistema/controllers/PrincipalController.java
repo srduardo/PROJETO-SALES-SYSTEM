@@ -9,6 +9,6 @@ public class PrincipalController {
 
     @GetMapping("/")
     public String acessarPrincipal() {
-        return "resources/templates/administrativo/home";
+        return "administrativo/home";
     }
 }
