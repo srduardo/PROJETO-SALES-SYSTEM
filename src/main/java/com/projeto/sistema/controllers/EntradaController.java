@@ -49,7 +49,7 @@ public class EntradaController {
 
     @GetMapping("/listarEntrada")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/entradas/lista");
+        ModelAndView mv = new ModelAndView("administrativo/entradas/lista");
         mv.addObject("listaEntradas", entradaService.listar());
         return mv;
     }
@@ -67,7 +67,7 @@ public class EntradaController {
 
         for (ItemEntrada it : this.listaItemEntrada) {
             if (it.getIdSequencia().equals(idSequencia)) {
-                ModelAndView mv = new ModelAndView("/administrativo/produtos/cadastro");
+                ModelAndView mv = new ModelAndView("administrativo/produtos/cadastro");
                 mv.addObject("produto", it.getProduto());
                 return mv;
             }

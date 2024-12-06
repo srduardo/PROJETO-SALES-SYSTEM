@@ -25,7 +25,7 @@ public class EstadoController {
 
     @GetMapping("/listarEstado")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/estados/lista");
+        ModelAndView mv = new ModelAndView("administrativo/estados/lista");
         mv.addObject("listaEstados", estadoService.listar());
         return mv;
     }

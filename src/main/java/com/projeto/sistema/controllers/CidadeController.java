@@ -28,7 +28,7 @@ public class CidadeController {
 
     @GetMapping("/listarCidade")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/cidades/lista");
+        ModelAndView mv = new ModelAndView("administrativo/cidades/lista");
         mv.addObject("listaCidades", cidadeService.listar());
         return mv;
     }

@@ -24,7 +24,7 @@ public class ProdutoController {
 
     @GetMapping("/listarProduto")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/produtos/lista");
+        ModelAndView mv = new ModelAndView("administrativo/produtos/lista");
         mv.addObject("listaProdutos", produtoService.listar());
         return mv;
     }

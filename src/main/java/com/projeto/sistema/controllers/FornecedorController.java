@@ -28,7 +28,7 @@ public class FornecedorController {
 
     @GetMapping("/listarFornecedor")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/fornecedores/lista");
+        ModelAndView mv = new ModelAndView("administrativo/fornecedores/lista");
         mv.addObject("listaFornecedores", fornecedorService.listar());
         return mv;
     }

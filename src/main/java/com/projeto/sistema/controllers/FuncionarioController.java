@@ -28,7 +28,7 @@ public class FuncionarioController {
 
     @GetMapping("/listarFuncionario")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/funcionarios/lista");
+        ModelAndView mv = new ModelAndView("administrativo/funcionarios/lista");
         mv.addObject("listaFuncionarios", funcionarioService.listar());
         return mv;
     }

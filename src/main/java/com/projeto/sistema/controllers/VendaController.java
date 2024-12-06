@@ -48,7 +48,7 @@ public class VendaController {
 
     @GetMapping("/listarVenda")
     public ModelAndView listar() {
-        ModelAndView mv = new ModelAndView("/administrativo/vendas/lista");
+        ModelAndView mv = new ModelAndView("administrativo/vendas/lista");
         mv.addObject("listaVendas", vendaService.listar());
         return mv;
     }
@@ -66,7 +66,7 @@ public class VendaController {
 
         for (ItemVenda it : this.listaItemVenda) {
             if (it.getIdSequencia().equals(idSequencia)) {
-                ModelAndView mv = new ModelAndView("/administrativo/produtos/cadastro");
+                ModelAndView mv = new ModelAndView("administrativo/produtos/cadastro");
                 mv.addObject("produto", it.getProduto());
                 return mv;
             }
