@@ -15,20 +15,11 @@ public class dbConfig {
     @Bean
     public DataSource dataSource() {
 
-        String host = System.getenv("DATABASE_HOST");
-        String port = System.getenv("DATABASE_PORT");
-        String name = System.getenv("DATABASE_NAME");
+        String url = System.getenv("DATABASE_URL");
         String user = System.getenv("DATABASE_USER");
         String password = System.getenv("DATABASE_PASSWORD");
 
-        if (host != null && port != null && name != null && user != null && password != null) {
-
-            String jdbcUrl = String.format("jdbc:postgres://%s:%s/%s", host, port, name);
-
-            return DataSourceBuilder.create().url(jdbcUrl).username(user).password(password).build();
-        } else {
-            throw new RuntimeException("Configuração do banco de dados não encontrada.");
-        }
+        return DataSourceBuilder.create().url(url).username(user).password(password).build();
     }
 
     @Bean
