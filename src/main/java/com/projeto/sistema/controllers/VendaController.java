@@ -31,8 +31,6 @@ public class VendaController {
     private ClienteService clienteService;
 
     private List<ItemVenda> listaItemVenda = new ArrayList<ItemVenda>();
-    @Autowired
-    private VendaRepository vendaRepository;
 
     @GetMapping("/cadastroVenda")
     public ModelAndView cadastrar(Venda venda, ItemVenda itemVenda) {
