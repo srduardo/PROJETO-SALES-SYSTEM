@@ -37,7 +37,11 @@ public class VendaController {
     @GetMapping("/cadastroVenda")
     public ModelAndView cadastrar(Venda venda, ItemVenda itemVenda) {
         ModelAndView mv = new ModelAndView("administrativo/vendas/cadastro");
-        mv.addObject("venda", venda);
+        if (this.listaItemVenda.isEmpty()) {
+            mv.addObject("venda", venda);
+        } else {
+            mv.addObject("venda", this.listaItemVenda.get(this.listaItemVenda.size() - 1).getVenda());
+        }
         mv.addObject("itemVenda", itemVenda);
         mv.addObject("listaItemVenda", this.listaItemVenda);
         mv.addObject("listaFuncionarios", funcionarioService.listar());
@@ -88,7 +92,7 @@ public class VendaController {
 
     @GetMapping("/removerItemVenda/{idSequencia}")
     public ModelAndView removerItemVenda(@PathVariable("idSequencia") Long idSequencia) {
-        ItemVenda itemVenda =  itemVendaService.retornarAoEstoqueAoDeletarItemVenda(this.listaItemVenda, idSequencia);
+        ItemVenda itemVenda = itemVendaService.retornarAoEstoqueAoDeletarItemVenda(this.listaItemVenda, idSequencia);
         Venda venda = itemVenda.getVenda();
         listaItemVenda.remove(itemVenda);
         listaItemVenda = itemVendaService.reajustarIdSequencia(this.listaItemVenda);
